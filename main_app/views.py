@@ -1,4 +1,7 @@
 from django.shortcuts import render
+
+from django.views.generic.edit import CreateView,UpdateView, DeleteView
+
 from .models import Finch
 
 # Add this finch list below the imports
@@ -9,7 +12,29 @@ finches = [
  ]
  """
 
+
 # Create your views here.
+
+#CLASS BASED VIEWS
+
+class FinchCreate(CreateView):
+  model = Finch
+  fields = '__all__'
+ # fields = ['name', 'type', 'description']
+  #success_url = '/finches/{finch_id}'
+  success_url = '/finches'
+
+
+class FinchUpdate(UpdateView):
+  model = Finch
+ 
+  fields = ['type', 'description']
+
+class FinchDelete(DeleteView):
+  model = Finch
+  success_url = '/finches'
+
+
 
 # Define the home view
 def home(request):
@@ -32,5 +57,7 @@ def finches_index(request):
 def finches_detail(request, finch_id):
   finch = Finch.objects.get(id=finch_id)
   return render(request, 'finches/detail.html', { 'finch': finch })
+
+
 
    

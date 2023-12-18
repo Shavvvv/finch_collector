@@ -15,3 +15,29 @@ class Finch(models.Model):
       # Add this method
     def get_absolute_url(self):
         return reverse('detail', kwargs={'finch_id': self.id})
+    
+    
+
+COMPANIES=(
+         ('G', 'Geico Pets'),
+    ('E', 'Eagle Eye'),
+    ('P', 'Pettigree insurance')
+    )
+    
+
+# Add new Feeding model below Cat model
+class Insurance(models.Model):
+  date  = models.DateField()
+  company = models.CharField(
+      max_length=1,
+      choices=COMPANIES,
+      default=COMPANIES[0][0])
+  
+  finch = models.ForeignKey(Finch, on_delete=models.CASCADE)
+  
+  def __str__(self):
+    # Nice method for obtaining the friendly value of a Field.choice
+    return f"{self.get_company_display()} on {self.date}"
+  
+  class Meta:
+    ordering = ['-date']

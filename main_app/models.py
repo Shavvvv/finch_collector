@@ -3,11 +3,25 @@ from django.urls import reverse
 
 # Create your models here.
 
+
+class Food(models.Model):
+    item = models.CharField(max_length=50)
+    foodgroup = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.item
+
+    def get_absolute_url(self):
+        return reverse('foods_detail', kwargs={'pk': self.id})
+
+
 class Finch(models.Model):
     # models.CharField are called field types if you want to google others
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
+
+    foods = models.ManyToManyField(Food)
 
     def __str__(self):
         return self.name
@@ -25,7 +39,7 @@ COMPANIES=(
     )
     
 
-# Add new Feeding model below Cat model
+
 class Insurance(models.Model):
   date  = models.DateField()
   company = models.CharField(

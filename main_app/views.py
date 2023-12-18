@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 
 from django.views.generic.edit import CreateView,UpdateView, DeleteView
+from django.views.generic import ListView, DetailView
 
-from .models import Finch,Insurance
+from .models import Finch,Insurance, Food
 
 from .forms import InsuranceForm
 
@@ -21,7 +22,8 @@ finches = [
 
 class FinchCreate(CreateView):
   model = Finch
-  fields = '__all__'
+  fields = ['name', 'type', 'description']
+ # fields = '__all__'
  # fields = ['name', 'type', 'description']
   #success_url = '/finches/{finch_id}'
   success_url = '/finches'
@@ -59,9 +61,13 @@ def finches_index(request):
 def finches_detail(request, finch_id):
   finch = Finch.objects.get(id=finch_id)
 
+  id_list = finch.foods.all().values_list('id')
+  # Now we can query for toys whose ids are not in the list using exclude
+  foods_finch_doesnt_eat = Food.objects.exclude(id__in=id_list)
+
   insurance_form = InsuranceForm()
 
-  return render(request, 'finches/detail.html', { 'finch': finch, 'insurance_form':insurance_form })
+  return render(request, 'finches/detail.html', { 'finch': finch, 'insurance_form':insurance_form, 'foods': foods_finch_doesnt_eat })
 
 
 
@@ -80,3 +86,21 @@ def add_insurance(request, finch_id):
 
 
    
+def assoc_food(request, finch_id, food_id):
+  # Note that you can pass a toy's id instead of the whole toy object
+  Finch.objects.get(id=finch_id).foods.add(food_id)
+  return redirect('detail', finch_id=finch_id)
+
+
+class FoodCreate(CreateView):
+    model = Food
+    fields = '__all__'
+
+
+class FoodDetail(DetailView):
+    model = Food
+
+
+class FoodDelete(DeleteView):
+    model = Food
+    success_url = '/finches'
